@@ -1,3 +1,5 @@
+package main;
+
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 

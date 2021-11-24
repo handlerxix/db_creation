@@ -1,3 +1,5 @@
+package main;
+
 import org.flywaydb.core.Flyway;
 import org.jetbrains.annotations.NotNull;
 
