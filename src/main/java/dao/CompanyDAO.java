@@ -18,8 +18,8 @@ public final class CompanyDAO extends DAO<Company> {
 
   private final @NotNull
   String companiesProductsSource =
-      " FROM COMPANY LEFT JOIN WAYBILL ON COMPANY.ID = COMPANY_ID " +
-          "LEFT JOIN WAYBILL_PRODUCTS ON WAYBILL.ID = WAYBILL_ID ";
+      "FROM COMPANY LEFT JOIN WAYBILL ON COMPANY.ID = COMPANY_ID "
+          + "LEFT JOIN WAYBILL_PRODUCTS ON WAYBILL.ID = WAYBILL_ID ";
   private final @NotNull
   String companiesProductsSQL =
       "SELECT COMPANY_ID, COMPANY.NAME, CASE WHEN SUM(COUNT) IS NULL THEN 0 ELSE SUM(COUNT) END AS PRODUCTS_COUNTS "
@@ -28,14 +28,17 @@ public final class CompanyDAO extends DAO<Company> {
   private final @NotNull
   String companiesWithProductsConditionSQL =
       "SELECT COMPANY_ID, COUNT(PRODUCT_ID) AS CONDITION_SUCCEEDED_COUNT FROM (" +
-          "SELECT COMPANY_ID, PRODUCT_ID, COUNT "
+          "SELECT COMPANY_ID, PRODUCT_ID "
           + companiesProductsSource
-          + "WHERE %s) x " +
-          "GROUP BY COMPANY_ID HAVING COUNT(PRODUCT_ID) >= ?";
+          + "GROUP BY COMPANY_ID, PRODUCT_ID HAVING %s) x "
+          + "GROUP BY COMPANY_ID HAVING COUNT(PRODUCT_ID) >= ?";
   private final @NotNull
   String companiesProductsByDateSQL =
-      "SELECT COMPANY.NAME AS COMPANY, PRODUCT.NAME AS PRODUCT, COUNT " + companiesProductsSource
-          + "JOIN PRODUCT ON PRODUCT.ID = PRODUCT_ID WHERE DATE >= ? AND DATE <= ?";
+      "SELECT COMPANY.ID AS COMPANY, PRODUCT_ID AS PRODUCT, SUM(COUNT) "
+          + "FROM COMPANY LEFT JOIN "
+          + "(SELECT * FROM WAYBILL WHERE DATE >= ? AND DATE <= ?) X ON COMPANY.ID = COMPANY_ID "
+          + "LEFT JOIN WAYBILL_PRODUCTS ON X.ID = WAYBILL_ID "
+          + "GROUP BY COMPANY.ID, PRODUCT_ID";
 
   public CompanyDAO(@NotNull Connection connection) {
     super(connection, "COMPANY");
@@ -44,11 +47,12 @@ public final class CompanyDAO extends DAO<Company> {
   @Override
   public void insert(@NotNull Company entity) {
     try {
-      String insertSQL = "INSERT INTO " + getTableName() + " (NAME, INDIVIDUAL_TAX_NUMBER, COMPANY_CHECK) VALUES (?, ?, ?)";
+      String insertSQL = "INSERT INTO " + getTableName() + " (ID, NAME, INDIVIDUAL_TAX_NUMBER, COMPANY_CHECK) VALUES (?, ?, ?, ?)";
       final var statement = connection.prepareStatement(insertSQL);
-      statement.setString(1, entity.getName());
-      statement.setString(2, entity.getTaxNumber());
-      statement.setString(3, entity.getCompanyCheck());
+      statement.setInt(1, entity.getId());
+      statement.setString(2, entity.getName());
+      statement.setString(3, entity.getTaxNumber());
+      statement.setString(4, entity.getCompanyCheck());
       statement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -114,19 +118,19 @@ public final class CompanyDAO extends DAO<Company> {
   }
 
   @NotNull
-  public List<Triple<String, String, Integer>> companiesProductsForRange(@NotNull String after, @NotNull String before) {
+  public List<Triple<Integer, Integer, Integer>> companiesProductsForRange(@NotNull String after, @NotNull String before) {
     try {
       final var statement = connection.prepareStatement(companiesProductsByDateSQL);
       statement.setDate(1, Date.valueOf(after));
       statement.setDate(2, Date.valueOf(before));
       System.out.println(companiesProductsByDateSQL);
       final var resSet = statement.executeQuery();
-      final var ret = new ArrayList<Triple<String, String, Integer>>();
+      final var ret = new ArrayList<Triple<Integer, Integer, Integer>>();
       while (resSet.next()) {
         ret.add(Triple.of(
-            resSet.getString("COMPANY"),
-            resSet.getString("PRODUCT"),
-            resSet.getInt("COUNT")
+            resSet.getInt("COMPANY"),
+            resSet.getInt("PRODUCT"),
+            resSet.getInt("SUM")
         ));
       }
       return ret;
@@ -145,18 +149,19 @@ public final class CompanyDAO extends DAO<Company> {
       if (conditionsCount <= 0) {
         conditionSQL = "FALSE ";
       } else {
-        final var singleConditionSQL = "PRODUCT_ID = ? AND COUNT >= ? ";
+        final var singleConditionSQL = "PRODUCT_ID = ? AND SUM(COUNT) >= ? ";
         conditionSQL = IntStream.range(0, conditionsCount - 1)
             .mapToObj(i -> singleConditionSQL + "OR ")
             .reduce("", (res, str) -> res += str) + singleConditionSQL;
       }
 
       final var sql = String.format(companiesWithProductsConditionSQL, conditionSQL);
+      System.out.println(sql);
       final var statement = connection.prepareStatement(sql);
       IntStream.range(0, conditionsCount).forEach(i -> {
         final var key = keys.get(i);
         try {
-          statement.setInt(2 * i + 1, productsCondition.get(key));
+          statement.setInt(2 * i + 1, key);
           statement.setInt(2 * (i + 1), productsCondition.get(key));
         } catch (SQLException e) {
           e.printStackTrace();

@@ -16,10 +16,11 @@ public final class WayBillDAO extends DAO<WayBill> {
   @Override
   public void insert(@NotNull WayBill entity) {
     try {
-      String insertSQL = "INSERT INTO " + getTableName() + " (DATE, COMPANY_ID) VALUES (?, ?)";
+      String insertSQL = "INSERT INTO " + getTableName() + " (ID, DATE, COMPANY_ID) VALUES (?, ?, ?)";
       final var statement = connection.prepareStatement(insertSQL);
-      statement.setDate(1, entity.getDate());
-      statement.setInt(2, entity.getCompanyId());
+      statement.setInt(1, entity.getId());
+      statement.setDate(2, entity.getDate());
+      statement.setInt(3, entity.getCompanyId());
       statement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();

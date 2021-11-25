@@ -16,12 +16,13 @@ public final class WayBillProductsDAO extends DAO<WayBillProducts> {
   @Override
   public void insert(@NotNull WayBillProducts entity) {
     try {
-      String insertSQL = "INSERT INTO " + getTableName() + " (WAYBILL_ID, PRODUCT_ID, PRICE, COUNT) VALUES (?, ?, ?, ?)";
+      String insertSQL = "INSERT INTO " + getTableName() + " (ID, WAYBILL_ID, PRODUCT_ID, PRICE, COUNT) VALUES (?, ?, ?, ?, ?)";
       final var statement = connection.prepareStatement(insertSQL);
-      statement.setInt(1, entity.getWayBillId());
-      statement.setInt(2, entity.getProductId());
-      statement.setInt(3, entity.getPrice());
-      statement.setInt(4, entity.getCount());
+      statement.setInt(1, entity.getId());
+      statement.setInt(2, entity.getWayBillId());
+      statement.setInt(3, entity.getProductId());
+      statement.setInt(4, entity.getPrice());
+      statement.setInt(5, entity.getCount());
       statement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();

@@ -2,6 +2,7 @@ package dao;
 
 import entity.Product;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
@@ -23,11 +24,11 @@ public final class ProductDAO extends DAO<Product> {
 
   private @NotNull
   String productsByDaysSQL =
-      "SELECT PRODUCT_ID, DATE, SUM(COUNT) AS PRODUCT_COUNT, SUM(PRICE) AS PRODUCT_PRICE "+ sourceQuery;
+      "SELECT PRODUCT_ID, DATE, SUM(COUNT) AS PRODUCT_COUNT, SUM(PRICE) AS PRODUCT_PRICE " + sourceQuery;
 
   private @NotNull
   String avgPriceFoePeriodSQL =
-      "SELECT PRODUCT_ID, (CAST(SUM(PRICE) AS FLOAT)/SUM(COUNT)) AS AVG_PRICE "+ sourceQuery;
+      "SELECT PRODUCT_ID, (CAST(SUM(PRICE) AS FLOAT)/SUM(COUNT)) AS AVG_PRICE " + sourceQuery;
 
   public ProductDAO(@NotNull Connection connection) {
     super(connection, "PRODUCT");
@@ -36,10 +37,11 @@ public final class ProductDAO extends DAO<Product> {
   @Override
   public void insert(@NotNull Product entity) {
     try {
-      String insertSQL = "INSERT INTO " + getTableName() + " (NAME, INNER_CODE) VALUES (?, ?)";
+      String insertSQL = "INSERT INTO " + getTableName() + " (ID, NAME, INNER_CODE) VALUES (?, ?, ?)";
       final var statement = connection.prepareStatement(insertSQL);
-      statement.setString(1, entity.getName());
-      statement.setString(2, entity.getInnerCode());
+      statement.setInt(1, entity.getId());
+      statement.setString(2, entity.getName());
+      statement.setString(3, entity.getInnerCode());
       statement.executeUpdate();
     } catch (SQLException e) {
       e.printStackTrace();
@@ -86,20 +88,18 @@ public final class ProductDAO extends DAO<Product> {
   }
 
   @NotNull
-  public List<List<String>> productByDate(@NotNull String after, @NotNull String before) {
+  public List<Triple<Integer, Date, Integer>> productByDate(@NotNull String after, @NotNull String before) {
     try {
       final var statement = connection.prepareStatement(productsByDaysSQL);
       statement.setDate(1, Date.valueOf(after));
       statement.setDate(2, Date.valueOf(before));
-      final var ret = new ArrayList<List<String>>();
+      final var ret = new ArrayList<Triple<Integer, Date, Integer>>();
       final var resSet = statement.executeQuery();
       while (resSet.next()) {
-        final var l = new ArrayList<String>();
-        l.add(String.valueOf(resSet.getInt("PRODUCT_ID")));
-        l.add(String.valueOf(resSet.getDate("DATE")));
-        l.add(String.valueOf(resSet.getInt("PRODUCT_COUNT")));
-        l.add(String.valueOf(resSet.getInt("PRODUCT_PRICE")));
-        ret.add(l);
+        ret.add(Triple.of(resSet.getInt("PRODUCT_ID"),
+            resSet.getDate("DATE"),
+            resSet.getInt("PRODUCT_COUNT")
+        ));
       }
       return ret;
     } catch (SQLException e) {
