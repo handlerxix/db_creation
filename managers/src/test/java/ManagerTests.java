@@ -5,7 +5,6 @@ import dao.ProductManager;
 import dao.WayBillManager;
 import dao.WayBillProductsManager;
 import generated.Tables;
-import generated.tables.Company;
 import generated.tables.Waybill;
 import generated.tables.WaybillProducts;
 import generated.tables.records.CompanyRecord;
@@ -27,7 +26,6 @@ import java.util.stream.Stream;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
 
-@SuppressWarnings("ConstantConditions")
 public final class ManagerTests {
   @NotNull
   public CompanyManager companyDAO;
@@ -40,10 +38,10 @@ public final class ManagerTests {
   public final JDBCCredentials creds = JDBCCredentials.DEFAULT;
   @NotNull
   public WayBillProductsManager wayBillProductsDAO;
-  private final @NotNull
-  Company COMPANY = Tables.COMPANY;
+
   private final @NotNull
   Waybill WAYBILL = Tables.WAYBILL;
+
   private final @NotNull
   WaybillProducts WAYBILL_PRODUCTS = Tables.WAYBILL_PRODUCTS;
 
