@@ -1,5 +1,6 @@
 plugins {
     java
+    kotlin("jvm") version "1.4.31"
 }
 
 group = "org.example.db.creation"
@@ -9,17 +10,24 @@ repositories {
     mavenCentral()
 }
 val lombokVersion = "1.18.22"
-dependencies {
 
-    implementation("org.flywaydb:flyway-core:6.1.4")
-    implementation("org.postgresql:postgresql:42.2.9")
-    implementation("org.apache.commons:commons-lang3:3.12.0")
+subprojects {
+    apply {
+        plugin("org.jetbrains.kotlin.jvm")
+    }
 
-    compileOnly("com.intellij:annotations:12.0")
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
-    
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    group = "org.example.db.creation"
+    version = "1.0-SNAPSHOT"
 
-    testImplementation("junit:junit:4.12")
-    testCompileOnly("com.intellij:annotations:12.0")
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+
+        compileOnly("com.intellij:annotations:12.0")
+
+        testImplementation("junit:junit:4.12")
+        testCompileOnly("com.intellij:annotations:12.0")
+    }
 }

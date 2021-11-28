@@ -9,8 +9,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/main" />
-            <option value="$PROJECT_DIR$/untitled" />
+            <option value="$PROJECT_DIR$/application" />
+            <option value="$PROJECT_DIR$/jooq" />
+            <option value="$PROJECT_DIR$/managers" />
           </set>
         </option>
       </GradleProjectSettings>

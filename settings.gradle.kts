@@ -1,3 +1,4 @@
 rootProject.name = "db_creation"
-include("main")
-include("untitled")
+include("application")
+include("jooq")
+include("managers")
