@@ -1,10 +1,10 @@
+import org.jooq.meta.jaxb.SchemaMappingType
+
 plugins {
     id("nu.studer.jooq") version "6.0.1"
-    kotlin("jvm")
 }
 
 val jooqVersion = "+"
-
 dependencies {
     compile("org.jooq:jooq:$jooqVersion")
     api("org.jooq:jooq:$jooqVersion")
@@ -15,13 +15,9 @@ dependencies {
 }
 
 jooq {
-    version.set(jooqVersion)
     edition.set(nu.studer.gradle.jooq.JooqEdition.OSS)
-
-
     configurations {
         create("main") {
-
             generateSchemaSourceOnCompilation.set(false)
 
             jooqConfiguration.apply {
@@ -37,8 +33,12 @@ jooq {
                     name = "org.jooq.codegen.DefaultGenerator"
                     database.apply {
                         name = "org.jooq.meta.postgres.PostgresDatabase"
-                        schemata.add(org.jooq.meta.jaxb.SchemaMappingType().withInputSchema("public"))
-                        schemata.add(org.jooq.meta.jaxb.SchemaMappingType().withInputSchema("security"))
+                        schemata.addAll(
+                            listOf(
+                                SchemaMappingType().withInputSchema("public"),
+                                SchemaMappingType().withInputSchema("security")
+                            )
+                        )
                         inputSchema = "public"
                         excludes = "flyway_schema_history"
                     }

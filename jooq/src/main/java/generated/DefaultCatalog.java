@@ -17,13 +17,11 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class DefaultCatalog extends CatalogImpl {
 
-  private static final long serialVersionUID = 1L;
-
   /**
    * The reference instance of <code>DEFAULT_CATALOG</code>
    */
   public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
-
+  private static final long serialVersionUID = 1L;
   /**
    * The schema <code>public</code>.
    */
@@ -43,9 +41,9 @@ public class DefaultCatalog extends CatalogImpl {
 
   @Override
   public final List<Schema> getSchemas() {
-        return Arrays.asList(
-            Public.PUBLIC,
-            Security.SECURITY
-        );
-    }
+    return Arrays.asList(
+        Public.PUBLIC,
+        Security.SECURITY
+    );
+  }
 }

@@ -10,6 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/application" />
+            <option value="$PROJECT_DIR$/jetty" />
             <option value="$PROJECT_DIR$/jooq" />
             <option value="$PROJECT_DIR$/managers" />
           </set>
