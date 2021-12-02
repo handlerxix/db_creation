@@ -1,6 +1,9 @@
 plugins {
     java
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.3.+" apply false
+    application
+    `kotlin-dsl`
+    `java-library`
 }
 
 group = "org.example.db.creation"
@@ -12,6 +15,7 @@ repositories {
 val lombokVersion = "1.18.22"
 
 subprojects {
+
     apply {
         plugin("org.jetbrains.kotlin.jvm")
     }

@@ -8,6 +8,7 @@ public final class DBCreator {
     final var flyway = Flyway
         .configure()
         .dataSource(creds.getUrl(), creds.getUser(), creds.getPassword())
+        .schemas("public", "security")
         .locations("migrations")
         .load();
     flyway.clean();

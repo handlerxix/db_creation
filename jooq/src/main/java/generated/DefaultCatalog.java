@@ -3,6 +3,8 @@
  */
 package generated;
 
+import generated.public_.Public;
+import generated.security.Security;
 import org.jooq.Schema;
 import org.jooq.impl.CatalogImpl;
 
@@ -15,27 +17,35 @@ import java.util.List;
 @SuppressWarnings({"all", "unchecked", "rawtypes"})
 public class DefaultCatalog extends CatalogImpl {
 
-    /**
-     * The reference instance of <code>DEFAULT_CATALOG</code>
-     */
-    public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
-    private static final long serialVersionUID = 1L;
-    /**
-     * The schema <code>public</code>.
-     */
-    public final Public PUBLIC = Public.PUBLIC;
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * No further instances allowed
-     */
-    private DefaultCatalog() {
-        super("");
-    }
+  /**
+   * The reference instance of <code>DEFAULT_CATALOG</code>
+   */
+  public static final DefaultCatalog DEFAULT_CATALOG = new DefaultCatalog();
 
-    @Override
-    public final List<Schema> getSchemas() {
+  /**
+   * The schema <code>public</code>.
+   */
+  public final Public PUBLIC = Public.PUBLIC;
+
+  /**
+   * The schema <code>security</code>.
+   */
+  public final Security SECURITY = Security.SECURITY;
+
+  /**
+   * No further instances allowed
+   */
+  private DefaultCatalog() {
+    super("");
+  }
+
+  @Override
+  public final List<Schema> getSchemas() {
         return Arrays.asList(
-            Public.PUBLIC
+            Public.PUBLIC,
+            Security.SECURITY
         );
     }
 }
