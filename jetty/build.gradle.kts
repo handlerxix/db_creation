@@ -15,4 +15,6 @@ dependencies {
     implementation("org.eclipse.jetty:jetty-rewrite:$jettyVersion")
     implementation("org.eclipse.jetty:jetty-server:$jettyVersion")
     implementation("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+    implementation(project(":jooq"))
+    implementation(project(":managers"))
 }

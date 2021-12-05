@@ -1,7 +1,7 @@
 INSERT INTO SECURITY.USERS (ID, LOGIN, PASSWORD)
 VALUES
-(1, 'admin', md5('admin_pass')),
-(2, 'user', md5('user_pass'));
+(1, 'admin', 'MD5:'||md5('admin_pass')),
+(2, 'user', 'MD5:'||md5('user_pass'));
 
 INSERT INTO SECURITY.ROLES (ID, ROLE)
 VALUES

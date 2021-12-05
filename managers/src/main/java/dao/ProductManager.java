@@ -4,11 +4,12 @@ import generated.public_.Tables;
 import generated.public_.tables.Product;
 import generated.public_.tables.records.ProductRecord;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 
 public final class ProductManager {
@@ -16,6 +17,7 @@ public final class ProductManager {
   private final @NotNull
   DSLContext context;
 
+  @Inject
   ProductManager(@NotNull Connection connection) {
     this.context = DSL.using(connection);
   }
@@ -23,39 +25,20 @@ public final class ProductManager {
   private final @NotNull
   Product PRODUCT = Tables.PRODUCT;
 
-  public void insert(@NotNull ProductRecord rec) {
-    context
-        .insertInto(PRODUCT, PRODUCT.ID, PRODUCT.NAME)
-        .values(rec)
-        .execute();
+  public @NotNull
+  Result<Record> allProducts() {
+    return context.select().from(PRODUCT).fetch();
   }
 
-  public void update(@NotNull ProductRecord rec) {
+  public void add(@NotNull String newProduct) {
+    context.insertInto(PRODUCT, PRODUCT.NAME).values(newProduct).execute();
+  }
+
+  public void rename(@NotNull ProductRecord rec) {
     context
         .update(PRODUCT)
-        .set(PRODUCT.NAME, rec.field(PRODUCT.NAME))
+        .set(PRODUCT.NAME, rec.get("NAME", String.class))
+        .where(PRODUCT.ID.eq(rec.get("ID", Integer.class)))
         .execute();
-  }
-
-  public void delete(@NotNull ProductRecord rec) {
-    context
-        .deleteFrom(PRODUCT)
-        .where(PRODUCT.ID.eq(rec.get(PRODUCT.ID)))
-        .execute();
-  }
-
-  @Nullable
-  ProductRecord get(@NotNull Integer id) {
-    return context
-        .selectFrom(PRODUCT)
-        .where(PRODUCT.ID.eq(id))
-        .fetchOne();
-  }
-
-  @NotNull
-  Result<ProductRecord> all() {
-    return context
-        .selectFrom(PRODUCT)
-        .fetch();
   }
 }

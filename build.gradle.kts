@@ -25,6 +25,8 @@ subprojects {
     }
 
     dependencies {
+        implementation("com.google.inject:guice:4.0")
+
         compileOnly("com.intellij:annotations:12.0")
 
         testImplementation("junit:junit:4.12")

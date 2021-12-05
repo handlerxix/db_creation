@@ -1,20 +1,22 @@
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
+import com.google.inject.Guice;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.jetbrains.annotations.NotNull;
+import server.ServerBuilder;
 
 public final class Application {
 
-  public static void main(@NotNull String[] args) throws Exception {
-    final var server = new Server();
-    final var httpConfig = new HttpConfiguration();
-    final var httpConnectionFactory = new HttpConnectionFactory(httpConfig);
-    final var connector = new ServerConnector(server, httpConnectionFactory);
+  public static void main(@NotNull String[] args) {
 
-    connector.setHost("localhost");
-    connector.setPort(3500);
-    server.addConnector(connector);
-    server.start();
+    final var injector = Guice.createInjector(
+        new ApplicationModule()
+    );
+
+    final Server server;
+    try {
+      server = injector.getInstance(ServerBuilder.class).build();
+      server.start();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
